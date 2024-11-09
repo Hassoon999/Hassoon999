@@ -1,0 +1,169 @@
+using UnityEngine;
+
+public class PlayerController : MonoBehaviour
+{
+    // Movement
+    public float moveSpeed = 5f;
+    private Rigidbody2D rb;
+    private Vector2 movement;
+
+    // Health
+    public int maxHealth = 100;
+    private int currentHealth;
+
+    // Attack
+    public int damage = 20;
+    public float attackRange = 0.5f;
+    public Transform attackPoint;
+    public LayerMask enemyLayers;
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        currentHealth = maxHealth;
+    }
+
+    void Update()
+    {
+        // Handle movement input
+        movement.x = Input.GetAxis("Horizontal");
+        movement.y = Input.GetAxis("Vertical");
+
+        // Handle attack input
+        if (Input.GetButtonDown("Fire1"))
+        {
+            Attack();
+        }
+    }
+
+    void FixedUpdate()
+    {
+        // Apply movement
+        rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+    }
+
+    void Attack()
+    {
+        // Detect enemies in range of attack
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
+
+        // Damage each enemy
+        foreach (Collider2D enemy in hitEnemies)
+        {
+            enemy.GetComponent<PlayerController>().TakeDamage(damage);
+        }
+    }
+
+    public void TakeDamage(int amount)
+    {
+        currentHealth -= amount;
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    void Die()
+    {
+        // Add any death effects or animations here
+        Destroy(gameObject);
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if (attackPoint == null) return;
+        Gizmos.DrawWireSphere(attackPoint.position, attackRange);
+    }
+}
+using UnityEngine;
+using System.Collections.Generic;
+
+public class PlayerController : MonoBehaviour
+{
+    // Character Attributes
+    [System.Serializable]
+    public class Character
+    {
+        public string name;
+        public float moveSpeed;
+        public int maxHealth;
+        public int damage;
+    }
+
+    public List<Character> characters = new List<Character>(); // List of available characters
+    private Character currentCharacter; // Currently selected character
+    private int characterIndex = 0;     // Index of the selected character
+
+    // Movement
+    private Rigidbody2D rb;
+    private Vector2 movement;
+
+    // Health
+    private int currentHealth;
+
+    // Attack
+    public float attackRange = 0.5f;
+    public Transform attackPoint;
+    public LayerMask enemyLayers;
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+
+        // Add characters with their unique attributes
+        characters.Add(new Character { name = "Naruto Uzumaki", moveSpeed = 6f, maxHealth = 120, damage = 25 });
+        characters.Add(new Character { name = "Goku", moveSpeed = 7f, maxHealth = 150, damage = 30 });
+        characters.Add(new Character { name = "Saitama", moveSpeed = 8f, maxHealth = 200, damage = 50 });
+        characters.Add(new Character { name = "Luffy", moveSpeed = 7f, maxHealth = 130, damage = 28 });
+        characters.Add(new Character { name = "Ichigo Kurosaki", moveSpeed = 6.5f, maxHealth = 125, damage = 27 });
+        characters.Add(new Character { name = "Sasuke Uchiha", moveSpeed = 6.5f, maxHealth = 120, damage = 26 });
+        characters.Add(new Character { name = "Vegeta", moveSpeed = 7f, maxHealth = 145, damage = 29 });
+        characters.Add(new Character { name = "Natsu Dragneel", moveSpeed = 7.2f, maxHealth = 115, damage = 27 });
+        characters.Add(new Character { name = "Eren Yeager", moveSpeed = 6.8f, maxHealth = 110, damage = 25 });
+        characters.Add(new Character { name = "Edward Elric", moveSpeed = 6.5f, maxHealth = 105, damage = 24 });
+        characters.Add(new Character { name = "Kenshin Himura", moveSpeed = 6.7f, maxHealth = 110, damage = 26 });
+        characters.Add(new Character { name = "Yusuke Urameshi", moveSpeed = 6.6f, maxHealth = 120, damage = 27 });
+        characters.Add(new Character { name = "Light Yagami", moveSpeed = 5.5f, maxHealth = 90, damage = 50 });
+        characters.Add(new Character { name = "Gon Freecss", moveSpeed = 6.8f, maxHealth = 110, damage = 24 });
+        characters.Add(new Character { name = "Killua Zoldyck", moveSpeed = 7f, maxHealth = 105, damage = 25 });
+        characters.Add(new Character { name = "All Might", moveSpeed = 6f, maxHealth = 160, damage = 35 });
+        characters.Add(new Character { name = "Shoto Todoroki", moveSpeed = 6.4f, maxHealth = 115, damage = 28 });
+        characters.Add(new Character { name = "Deku", moveSpeed = 6.3f, maxHealth = 120, damage = 27 });
+        characters.Add(new Character { name = "Tanjirou Kamado", moveSpeed = 6.2f, maxHealth = 110, damage = 26 });
+        characters.Add(new Character { name = "Inuyasha", moveSpeed = 6.6f, maxHealth = 120, damage = 28 });
+        characters.Add(new Character { name = "Spike Spiegel", moveSpeed = 6.8f, maxHealth = 105, damage = 24 });
+        characters.Add(new Character { name = "Sailor Moon", moveSpeed = 6.1f, maxHealth = 100, damage = 23 });
+        characters.Add(new Character { name = "Monkey D. Dragon", moveSpeed = 6.9f, maxHealth = 140, damage = 30 });
+        characters.Add(new Character { name = "Roronoa Zoro", moveSpeed = 6.7f, maxHealth = 130, damage = 29 });
+        characters.Add(new Character { name = "Sanji", moveSpeed = 6.5f, maxHealth = 120, damage = 28 });
+        characters.Add(new Character { name = "Boa Hancock", moveSpeed = 6.4f, maxHealth = 110, damage = 27 });
+        characters.Add(new Character { name = "Shanks", moveSpeed = 6.6f, maxHealth = 150, damage = 32 });
+        characters.Add(new Character { name = "Rukia Kuchiki", moveSpeed = 6.2f, maxHealth = 100, damage = 24 });
+        characters.Add(new Character { name = "Uryu Ishida", moveSpeed = 6.5f, maxHealth = 105, damage = 23 });
+        characters.Add(new Character { name = "Grimmjow", moveSpeed = 6.8f, maxHealth = 130, damage = 28 });
+        characters.Add(new Character { name = "Levi Ackerman", moveSpeed = 7.5f, maxHealth = 115, damage = 30 });
+        characters.Add(new Character { name = "Mikasa Ackerman", moveSpeed = 6.9f, maxHealth = 110, damage = 27 });
+        characters.Add(new Character { name = "Erza Scarlet", moveSpeed = 6.7f, maxHealth = 125, damage = 29 });
+        characters.Add(new Character { name = "Gray Fullbuster", moveSpeed = 6.5f, maxHealth = 110, damage = 26 });
+        characters.Add(new Character { name = "Meliodas", moveSpeed = 7f, maxHealth = 130, damage = 32 });
+        characters.Add(new Character { name = "Elizabeth Liones", moveSpeed = 6.3f, maxHealth = 95, damage = 20 });
+        characters.Add(new Character { name = "Ban", moveSpeed = 6.9f, maxHealth = 140, damage = 30 });
+        characters.Add(new Character { name = "Diane", moveSpeed = 6f, maxHealth = 150, damage = 28 });
+        characters.Add(new Character { name = "King", moveSpeed = 6.1f, maxHealth = 125, damage = 26 });
+        characters.Add(new Character { name = "Escanor", moveSpeed = 5.5f, maxHealth = 160, damage = 40 });
+        characters.Add(new Character { name = "Yugi Mutou", moveSpeed = 5.2f, maxHealth = 90, damage = 22 });
+        characters.Add(new Character { name = "Joestar", moveSpeed = 6.8f, maxHealth = 130, damage = 27 });
+        characters.Add(new Character { name = "Dio Brando", moveSpeed = 7f, maxHealth = 140, damage = 33 });
+        characters.Add(new Character { name = "Shigeo Kageyama", moveSpeed = 6.6f, maxHealth = 115, damage = 28 });
+        characters.Add(new Character { name = "Lelouch Lamperouge", moveSpeed = 6.2f, maxHealth = 105, damage = 24 });
+        characters.Add(new Character { name = "Guts", moveSpeed = 6.5f, maxHealth = 150, damage = 35 });
+        characters.Add(new Character { name = "Alucard", moveSpeed = 6.8f, maxHealth = 160, damage = 36 });
+        characters.Add(new Character { name = "Saber", moveSpeed = 6.6f, maxHealth = 125, damage = 30 });
+        characters.Add(new Character { name = "Ryuko Matoi", moveSpeed = 6.9f, maxHealth = 110, damage = 27 });
+
+        SelectCharacter(0); // Select the first character by default
+    }
+
+    // Rest of the code remains the same
+    // (update, fixedupdate, attack, takedamage, die, etc.)
+}
